@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Elegante Tailoring - Professional Tailor Shop Design System */
+
+@layer base {
+  :root {
+    /* Core Brand Colors */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    
+    /* Professional Tailoring - Luxury Brand Palette - Enhanced */
+    --brand-navy: 215 45% 12%;
+    --brand-gold: 43 100% 58%;
+    --brand-gold-light: 43 90% 68%;
+    --brand-cream: 40 40% 96%;
+    --brand-gray-light: 210 20% 96%;
+    --brand-gray-medium: 210 15% 68%;
+    --brand-gray-dark: 215 30% 25%;
+    --brand-burgundy: 0 65% 32%;
+
+    /* Component Colors - Enhanced for Professional Look */
+    --card: 0 0% 100%;
+    --card-foreground: 215 45% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 45% 12%;
+
+    --primary: 215 45% 12%;
+    --primary-foreground: 40 40% 96%;
+
+    --secondary: 43 100% 58%;
+    --secondary-foreground: 215 45% 12%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 30% 25%;
+
+    --accent: 43 100% 58%;
+    --accent-foreground: 215 45% 12%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 15% 85%;
+    --input: 210 15% 85%;
+    --ring: 43 100% 58%;
+
+    /* Premium Professional Gradients - Enhanced */
+    --gradient-hero: linear-gradient(135deg, hsl(215 45% 12%), hsl(217 40% 18%));
+    --gradient-gold: linear-gradient(135deg, hsl(43 100% 58%), hsl(43 90% 68%));
+    --gradient-luxury: linear-gradient(135deg, hsl(215 45% 12%) 0%, hsl(215 40% 18%) 50%, hsl(215 30% 25%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(40 40% 98%));
+
+    /* Elegant Professional Shadows - Enhanced */
+    --shadow-card: 0 2px 12px -2px rgba(0, 0, 0, 0.10);
+    --shadow-product: 0 12px 28px -4px rgba(0, 0, 0, 0.14);
+    --shadow-elegant: 0 8px 32px -8px rgba(0, 0, 0, 0.12);
+    --shadow-gold: 0 8px 28px -6px rgba(217, 163, 47, 0.35);
+    --shadow-premium: 0 20px 48px -12px rgba(0, 0, 0, 0.20);
+
+    /* Smooth Professional Animations */
+    --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-elegant: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 43 46% 95%;
+    --card: 222 40% 14%;
+    --card-foreground: 43 46% 95%;
+    --primary: 38 92% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 30% 20%;
+    --secondary-foreground: 43 46% 95%;
+    --muted: 222 30% 20%;
+    --muted-foreground: 215 15% 65%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
+    --border: 222 30% 25%;
+    --input: 222 30% 25%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+  
+  .gradient-gold {
+    background: var(--gradient-gold);
+  }
+
+  .gradient-luxury {
+    background: var(--gradient-luxury);
+  }
+  
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+  
+  .shadow-product {
+    box-shadow: var(--shadow-product);
+  }
+  
+  .shadow-gold {
+    box-shadow: var(--shadow-gold);
+  }
+
+  .shadow-premium {
+    box-shadow: var(--shadow-premium);
+  }
+  
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  .transition-elegant {
+    transition: var(--transition-elegant);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+
+  /* Professional hover effects */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Card Images */
+  .card-image {
+    @apply object-contain absolute bottom-8 max-h-[50%] mt-auto max-w-[80%] left-1/2 -translate-x-1/2 pointer-events-none;
+  }
+}
