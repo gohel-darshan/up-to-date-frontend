@@ -8,38 +8,30 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
 import { toast } from 'sonner'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 
 export default function AdminLogin() {
-  const { adminLogin } = useAuth()
+  const { adminLogin, loading } = useAdminAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setError('')
 
-    try {
-      const success = await adminLogin(formData.email, formData.password)
-      
-      if (success) {
-        toast.success('Admin login successful!')
-        router.push('/admin/dashboard')
-      } else {
-        setError('Invalid admin credentials or access denied')
-      }
-    } catch (error) {
-      setError('Login failed. Please try again.')
-    } finally {
-      setLoading(false)
+    const success = await adminLogin(formData.email, formData.password)
+    
+    if (success) {
+      toast.success('Admin login successful!')
+      router.push('/admin/dashboard')
+    } else {
+      setError('Invalid admin credentials or access denied')
     }
   }
 

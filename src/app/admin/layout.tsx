@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
-import ProtectedRoute from '@/components/ProtectedRoute'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAdminAuth } from '@/contexts/AdminAuthContext'
 import { 
   LayoutDashboard, 
   Package, 
@@ -66,11 +65,17 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  const { adminUser, adminLogout, isAdminAuthenticated } = useAdminAuth()
+
+  useEffect(() => {
+    if (!isAdminAuthenticated && pathname !== '/admin/login') {
+      router.push('/admin/login')
+    }
+  }, [isAdminAuthenticated, pathname, router])
 
   const handleLogout = () => {
-    logout()
-    router.push('/auth/login')
+    adminLogout()
+    router.push('/admin/login')
   }
 
   // Show login page without sidebar
@@ -78,9 +83,12 @@ export default function AdminLayout({
     return <>{children}</>
   }
 
+  if (!isAdminAuthenticated && pathname !== '/admin/login') {
+    return null
+  }
+
   return (
-    <ProtectedRoute requireAdmin>
-      <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50">
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div 
@@ -174,7 +182,7 @@ export default function AdminLayout({
             
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">
-                Welcome, {user?.firstName} {user?.lastName}
+                Welcome, {adminUser?.firstName} {adminUser?.lastName}
               </span>
             </div>
           </div>
@@ -186,6 +194,5 @@ export default function AdminLayout({
         </main>
       </div>
     </div>
-    </ProtectedRoute>
   )
 }

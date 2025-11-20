@@ -15,7 +15,8 @@ class ApiClient {
   constructor(baseURL: string) {
     this.baseURL = baseURL
     if (typeof window !== 'undefined') {
-      this.token = localStorage.getItem('adminToken')
+      // Prioritize user token for general API calls
+      this.token = localStorage.getItem('userToken') || localStorage.getItem('adminToken')
     }
   }
 
@@ -51,23 +52,80 @@ class ApiClient {
     }
   }
 
-  setToken(token: string) {
+  setToken(token: string, isAdmin = false) {
     this.token = token
     if (typeof window !== 'undefined') {
-      localStorage.setItem('adminToken', token)
+      if (isAdmin) {
+        localStorage.setItem('adminToken', token)
+      } else {
+        localStorage.setItem('userToken', token)
+      }
     }
   }
 
-  clearToken() {
+  clearToken(isAdmin = false) {
     this.token = null
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('adminToken')
+      if (isAdmin) {
+        localStorage.removeItem('adminToken')
+      } else {
+        localStorage.removeItem('userToken')
+        localStorage.removeItem('adminToken')
+      }
     }
+  }
+
+  getUserToken() {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('userToken')
+    }
+    return null
+  }
+
+  getAdminToken() {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('adminToken')
+    }
+    return null
+  }
+
+  // User Auth endpoints
+  async register(userData: {
+    email: string
+    password: string
+    firstName: string
+    lastName: string
+    phone?: string
+  }) {
+    return this.request<{ token: string; user: any }>('/auth/register', 'POST', userData)
+  }
+
+  async login(email: string, password: string) {
+    return this.request<{ token: string; user: any }>('/auth/login', 'POST', { email, password })
+  }
+
+  async getProfile() {
+    return this.request<{ user: any }>('/auth/profile')
+  }
+
+  async updateProfile(userData: {
+    firstName?: string
+    lastName?: string
+    phone?: string
+  }) {
+    return this.request<{ user: any }>('/auth/profile', 'PUT', userData)
+  }
+
+  async changePassword(currentPassword: string, newPassword: string) {
+    return this.request<{ message: string }>('/auth/change-password', 'PUT', {
+      currentPassword,
+      newPassword
+    })
   }
 
   // Admin Auth endpoints
   async adminLogin(email: string, password: string) {
-    return this.request<{ token: string; user: any }>('/auth/login', 'POST', { email, password })
+    return this.request<{ token: string; user: any }>('/auth/admin/login', 'POST', { email, password })
   }
 
   // Products endpoints
@@ -224,6 +282,112 @@ class ApiClient {
 
   async updateUserStatus(userId: string, isActive: boolean) {
     return this.request<any>(`/admin/users/${userId}/status`, 'PATCH', { isActive })
+  }
+
+  // User Profile endpoints
+  async getUserAddresses() {
+    return this.request<{ addresses: any[] }>('/user/addresses')
+  }
+
+  async addUserAddress(addressData: {
+    firstName: string
+    lastName: string
+    company?: string
+    address1: string
+    address2?: string
+    city: string
+    state: string
+    postalCode: string
+    country?: string
+    phone?: string
+    isDefault?: boolean
+  }) {
+    return this.request<{ address: any }>('/user/addresses', 'POST', addressData)
+  }
+
+  async updateUserAddress(addressId: string, addressData: any) {
+    return this.request<{ address: any }>(`/user/addresses/${addressId}`, 'PUT', addressData)
+  }
+
+  async deleteUserAddress(addressId: string) {
+    return this.request<{ message: string }>(`/user/addresses/${addressId}`, 'DELETE')
+  }
+
+  async getUserOrders(params?: {
+    page?: number
+    limit?: number
+  }) {
+    const queryParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          queryParams.append(key, value.toString())
+        }
+      })
+    }
+    
+    return this.request<{
+      orders: any[]
+      pagination: any
+    }>(`/user/orders?${queryParams}`)
+  }
+
+  async getUserOrder(orderId: string) {
+    return this.request<{ order: any }>(`/user/orders/${orderId}`)
+  }
+
+  async addToWishlist(productId: string) {
+    return this.request<{ message: string }>(`/user/wishlist/${productId}`, 'POST')
+  }
+
+  async removeFromWishlist(productId: string) {
+    return this.request<{ message: string }>(`/user/wishlist/${productId}`, 'DELETE')
+  }
+
+  async getUserWishlist() {
+    return this.request<{ wishlist: any[] }>('/user/wishlist')
+  }
+
+  // Order endpoints
+  async createOrder(orderData: {
+    items: Array<{
+      productId: string
+      quantity: number
+      size: string
+      color: string
+    }>
+    addressId: string
+    paymentMethod: string
+    notes?: string
+  }) {
+    return this.request<{ order: any }>('/orders', 'POST', orderData)
+  }
+
+  async getOrders(params?: {
+    page?: number
+    limit?: number
+  }) {
+    const queryParams = new URLSearchParams()
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          queryParams.append(key, value.toString())
+        }
+      })
+    }
+    
+    return this.request<{
+      orders: any[]
+      pagination: any
+    }>(`/orders?${queryParams}`)
+  }
+
+  async getOrder(orderId: string) {
+    return this.request<{ order: any }>(`/orders/${orderId}`)
+  }
+
+  async cancelOrder(orderId: string) {
+    return this.request<{ message: string }>(`/orders/${orderId}/cancel`, 'PATCH')
   }
 }
 

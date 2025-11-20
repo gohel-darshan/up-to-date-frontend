@@ -34,7 +34,7 @@ const Home = () => {
       setLoading(true)
       
       // Fetch featured products
-      const featuredResponse = await api.getProducts({ featured: true, limit: 6 })
+      const featuredResponse = await api.getProducts({ featured: true, limit: 3 })
       if (featuredResponse.data) {
         setFeaturedProducts(featuredResponse.data.products)
       }

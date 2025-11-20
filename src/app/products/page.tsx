@@ -120,6 +120,11 @@ const Products = () => {
     router.push(`/products/${product.slug}`)
   }
 
+  const handleAddToCart = (product: any, size?: string, color?: any) => {
+    // Add to cart logic here
+    toast.success(`${product.name} added to cart`)
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
@@ -223,50 +228,29 @@ const Products = () => {
             ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
             : "space-y-4"
           }>
-            {products.map((product) => (
-              viewMode === 'grid' ? (
-                <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleProductClick(product)}>
-                  <CardContent className="p-0">
-                    <div className="aspect-square relative overflow-hidden rounded-t-lg">
-                      <img
-                        src={product.images[0] || '/placeholder.svg'}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                      {product.salePrice && (
-                        <Badge className="absolute top-2 left-2 bg-red-500">
-                          Sale
-                        </Badge>
-                      )}
-                      {product.featured && (
-                        <Badge className="absolute top-2 right-2 bg-yellow-500">
-                          Featured
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <Badge variant="outline" className="mb-2">
-                        {product.category.name}
-                      </Badge>
-                      <h3 className="font-semibold mb-2 line-clamp-2">{product.name}</h3>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-lg">
-                            ₹{product.salePrice || product.price}
-                          </span>
-                          {product.salePrice && (
-                            <span className="text-sm text-muted-foreground line-through">
-                              ₹{product.price}
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs text-muted-foreground">
-                          {product.stock} in stock
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+            {products.map((product) => {
+              // Transform product data to match ProductCard interface
+              const transformedProduct = {
+                ...product,
+                colors: product.colors?.map((color: string, index: number) => ({
+                  name: color,
+                  value: color,
+                  images: product.images || ['/placeholder.svg']
+                })) || [{
+                  name: 'Default',
+                  value: '#000000',
+                  images: product.images || ['/placeholder.svg']
+                }],
+                isOnSale: !!product.salePrice,
+                originalPrice: product.salePrice ? product.price : undefined,
+                price: product.salePrice || product.price,
+                isNewArrival: false,
+                category: product.category.name,
+                fabricRequirements: []
+              }
+              
+              return viewMode === 'grid' ? (
+                <ProductCard key={product.id} product={transformedProduct} />
               ) : (
                 <Card key={product.id} className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => handleProductClick(product)}>
                   <CardContent className="p-4">
@@ -312,7 +296,7 @@ const Products = () => {
                   </CardContent>
                 </Card>
               )
-            ))}
+            })}
           </div>
         ) : (
           <div className="text-center py-16">

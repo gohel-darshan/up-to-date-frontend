@@ -6,6 +6,7 @@ import { Heart, ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Product, ProductColor, useStore } from '@/lib/store';
+import { useWishlist } from '@/contexts/WishlistContext';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 
@@ -28,9 +29,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
   }
 
   const { toast } = useToast();
-  const addToWishlist = useStore(state => state.addToWishlist);
-  const removeFromWishlist = useStore(state => state.removeFromWishlist);
-  const isInWishlist = useStore(state => state.isInWishlist);
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const addToCart = useStore(state => state.addToCart);
 
   const [isHovered, setIsHovered] = useState(false);
@@ -91,27 +90,19 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
     }
   };
 
-  const handleWishlistToggle = (e: React.MouseEvent) => {
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (isWishlisted) {
-      removeFromWishlist(product.id);
-      toast({
-        title: "Removed from wishlist",
-        description: `${product.name} removed from your wishlist.`,
-      });
+      await removeFromWishlist(product.id);
     } else {
-      addToWishlist(product.id);
-      toast({
-        title: "Added to wishlist",
-        description: `${product.name} added to your wishlist.`,
-      });
+      await addToWishlist(product.id);
     }
   };
 
   return (
     <div className="group relative bg-card rounded-lg overflow-hidden shadow-card transition-smooth hover:shadow-product">
       {/* Product Image */}
-      <Link href={`/product/${product.id}`}>
+      <Link href={`/products/${product.slug || product.id}`}>
         <div 
           className="aspect-square bg-brand-gray-light relative overflow-hidden"
           onMouseEnter={handleMouseEnter}
@@ -184,7 +175,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
 
       {/* Product Info */}
       <div className="p-4 space-y-3">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/products/${product.slug || product.id}`}>
           <h3 className="font-semibold text-foreground group-hover:text-accent transition-smooth">
             {product.name}
           </h3>
@@ -241,7 +232,7 @@ const ProductCard = ({ product, onAddToCart }: ProductCardProps) => {
                 </div>
               ))}
               {product.fabricRequirements.length > 3 && (
-                <Link href={`/product/${product.id}`} className="text-xs text-primary hover:underline">
+                <Link href={`/products/${product.slug || product.id}`} className="text-xs text-primary hover:underline">
                   +{product.fabricRequirements.length - 3} more sizes →
                 </Link>
               )}

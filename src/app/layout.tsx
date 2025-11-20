@@ -8,6 +8,8 @@ import ScrollToTop from "@/components/ScrollToTop"
 import ClientProvider from './client-provider'
 import ConditionalLayout from './conditional-layout'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { AdminAuthProvider } from '@/contexts/AdminAuthContext'
+import { WishlistProvider } from '@/contexts/WishlistContext'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,12 +28,16 @@ export default function RootLayout({
       <body className={inter.className}>
         <ClientProvider>
           <AuthProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <ScrollToTop />
-              <ConditionalLayout>{children}</ConditionalLayout>
-            </TooltipProvider>
+            <WishlistProvider>
+              <AdminAuthProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <ScrollToTop />
+                  <ConditionalLayout>{children}</ConditionalLayout>
+                </TooltipProvider>
+              </AdminAuthProvider>
+            </WishlistProvider>
           </AuthProvider>
         </ClientProvider>
       </body>
